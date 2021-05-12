@@ -95,6 +95,10 @@ set(SHADERS
     shaders/billboard.fs
     shaders/billboard.vs)
 
+set(FINAL_PROJ
+    src/particle-struct.cpp
+    src/particle-struct.h)
+
 add_executable(billboard src/main-billboard.cpp ${RENDER_SOURCES} ${SHADERS})
 target_link_libraries(billboard ${CORE})
 
@@ -103,4 +107,7 @@ target_link_libraries(confetti ${CORE})
 
 add_executable(demo src/main-demo.cpp ${PSYS_SOURCES} ${RENDER_SOURCES} ${SHADERS})
 target_link_libraries(demo ${CORE})
+
+add_executable(structs src/main-structs.cpp ${PSYS_SOURCES} ${RENDER_SOURCES} ${SHADERS} ${FINAL_PROJ})
+target_link_libraries(structs ${CORE})
 

@@ -14,12 +14,12 @@ void Confetti::createParticles(int size)
 {
 	mTexture = theRenderer.loadTexture("../textures/particle.png");
 	// TODO: Create particles
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < 30000; i++) {
 		Particle p;
 		p.pos = random_unit_cube();
-		p.color = vec4(random_unit_cube() + vec3(0.5f), 1);
+		p.color = vec4(random_unit_cube() + vec3(0.2f), 1);
 		p.vel = random_unit_cube();
-		p.size = 0.25f;
+		p.size = 0.02f;
 	
 		mParticles.push_back(p);
 	}

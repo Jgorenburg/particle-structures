@@ -20,6 +20,9 @@ ParticleSystem::ParticleSystem()
 
 ParticleSystem::~ParticleSystem()
 {
+    for (int i = 0; i < mParticles.size(); i++) {
+        delete[] mParticles[i].bezier;
+    }
 }
 
 void ParticleSystem::init(int size)

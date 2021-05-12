@@ -10,10 +10,7 @@ using namespace std;
 using namespace agl;
 using namespace glm;
 
-bool sizestart = true;
-float numParticles;
-vec3 colors(1);
-float fulltime = 0;
+
 
 void MyParticleSystem::createParticles(int size) 
 {
