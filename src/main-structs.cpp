@@ -16,6 +16,27 @@ using namespace agl;
 
 ParticleStruct theSystem; 
 
+
+// OpenGL IDs
+GLuint theVboPosId;
+GLuint theVboNormalId;
+GLuint theElementbuffer;
+
+static void updateParticles()
+{
+   // assert(modelId >= 0 && modelId < theModelNames.size());
+   // theModel.loadPLY(theModelNames[theCurrentModel]);
+
+    theSystem.updateArrays();
+
+    glBindBuffer(GL_ARRAY_BUFFER, theVboPosId);
+    glBufferData(GL_ARRAY_BUFFER, theSystem.getSize() * 3.0f * sizeof(float), theSystem.positions(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, theVboNormalId);
+    glBufferData(GL_ARRAY_BUFFER, theSystem.getSize() * 3.0f * sizeof(float), theSystem.normals(), GL_DYNAMIC_DRAW);
+  
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
    if (action != GLFW_PRESS) return;
@@ -102,12 +123,29 @@ int main(int argc, char** argv)
    glEnable(GL_CULL_FACE);
    glClearColor(0, 0, 0, 1);
 
-   theSystem.init(70000); // TODO: Set number of particles here
+   glGenBuffers(1, &theVboPosId);
+   glGenBuffers(1, &theVboNormalId);
+
+   GLuint vaoId;
+   glGenVertexArrays(1, &vaoId);
+   glBindVertexArray(vaoId);
+
+   glEnableVertexAttribArray(0); // 0 -> Sending VertexPositions to array #0 in the active shader
+   glBindBuffer(GL_ARRAY_BUFFER, theVboPosId); // always bind before setting data
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+   glEnableVertexAttribArray(1); // 1 -> Sending Normals to array #1 in the active shader
+   glBindBuffer(GL_ARRAY_BUFFER, theVboNormalId); // always bind before setting data
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+   theSystem.init(150000); // TODO: Set number of particles here
    theSystem.buildCircle(vec3(-1, -1, -6), 1, 0.005);
    float fov = radians(30.0f);
    ParticleSystem::GetRenderer().perspective(fov, 1.0f, 0.1f, 10.0f);
    ParticleSystem::GetRenderer().lookAt(vec3(0,0,4), vec3(0,0,0));
    
+  
+
    float lastTime = glfwGetTime();
    while (!glfwWindowShouldClose(window))
    {
@@ -117,6 +155,11 @@ int main(int argc, char** argv)
       lastTime = glfwGetTime();
 
       theSystem.update(dt);
+    //  updateParticles();
+     // glDrawArrays(GL_POINTS, 0, theSystem.getSize());
+
+
+      theSystem.updateArrays();
       theSystem.draw();
 
       // Swap front and back buffers

@@ -10,6 +10,7 @@ namespace agl {
 
    struct Particle {
       glm::vec3 pos;
+      glm::vec3 norm;
       glm::vec3 vel;
       glm::vec4 color;
       float size;
@@ -27,7 +28,7 @@ namespace agl {
       ParticleSystem();
       virtual ~ParticleSystem();
      
-      void init(int size);
+      virtual void init(int size);
       virtual void update(float dt) = 0;
       virtual void draw();
 

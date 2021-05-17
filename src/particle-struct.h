@@ -8,6 +8,7 @@ namespace agl {
    class ParticleStruct : public ParticleSystem {
    public:
       virtual void createParticles(int size) override;
+      virtual ~ParticleStruct();
       virtual void update(float dt) override;
       virtual void updateSize();
       //virtual void addParticles(vec3 cursorpos, float dt);
@@ -21,12 +22,20 @@ namespace agl {
       virtual void decayTo(vec3 place, float distribution = 1.0f, float speed = 0.3f);
 
       virtual void buildFromSphere(vec3 place, vec3 origin, float radius, float distribution = 1.0f, float speed = 0.3f, float scale = 0.1f);
+      virtual float getSize();
+      virtual void updateArrays();
+      virtual float* positions();
+      virtual float* normals();
+      virtual void init(int size);
+      virtual void draw();
 
    private:
        bool sizestart = true;
        float numParticles;
        vec3 colors = vec3(1);
        float fulltime = 0;
+       float* pos;
+       float* norm;
 
        bool decaying = false;
        bool building = false;

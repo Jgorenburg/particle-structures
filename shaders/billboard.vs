@@ -1,6 +1,7 @@
 #version 400
 
 layout (location = 0) in vec3 vPos;
+layout (location = 1) in vec3 vNorm;
 
 uniform vec3 uCameraPos;
 uniform float uSize;
@@ -14,7 +15,8 @@ out vec2 uv;
 
 void main()
 {
-   color = uColor;
-   uv = vPos.xy;
-   gl_Position = uVP * vec4(uRot * ((vPos - vec3(0.5f, 0.5f, 0)) * uSize) + uOffset, 1); 
+  cout << "got here\n";
+  color = uColor;
+  uv = vPos.xy;
+  gl_Position = uVP * vec4(uRot * ((vPos - vec3(0.5f, 0.5f, 0)) * uSize) + uOffset, 1); 
 }

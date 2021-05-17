@@ -69,6 +69,25 @@ void Renderer::init(const std::string& vertex, const std::string& fragment)
    mShaderId = loadShader(vertex, fragment);
 }
 
+void Renderer::dynamicInit(int size, const std::string& vertex, const std::string& fragment)
+{
+    mInitialized = true;
+    float* positions = new float[3 * size];
+
+    glGenBuffers(1, &mVboPosId);
+    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId);
+    glBufferData(GL_ARRAY_BUFFER, size * 3 * sizeof(float), positions, GL_DYNAMIC_DRAW);
+
+    glGenVertexArrays(1, &mVaoId);
+    glBindVertexArray(mVaoId);
+
+    glEnableVertexAttribArray(0); // 0 -> Sending VertexPositions to array #0 in the active shader
+    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId); // always bind before setting data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+    mShaderId = loadShader(vertex, fragment);
+}
+
 void Renderer::blendMode(BlendMode mode)
 {
    if (mode == ADD)
@@ -140,7 +159,25 @@ void Renderer::quad(const glm::vec3& pos, const glm::vec4& color, float size, gl
    glUniformMatrix3fv(glGetUniformLocation(mShaderId, "uRot"), 1, GL_FALSE, &rot[0][0]);
 
 
-   glDrawArrays(GL_TRIANGLES, 0, 6); 
+   glDrawArrays(GL_POINTS, 0, 6); 
+}
+
+void Renderer::particles(const float* positions, const float* normals, int size, glm::mat3 rot)
+{
+    assert(mInitialized);
+
+    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), 0, 1, 0, 0);
+    glUniform1f(glGetUniformLocation(mShaderId, "uSize"), 1);
+    glUniformMatrix3fv(glGetUniformLocation(mShaderId, "uRot"), 1, GL_FALSE, &rot[0][0]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId);
+    glBufferData(GL_ARRAY_BUFFER, size * 3.0f * sizeof(float), positions, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId);
+    glBufferData(GL_ARRAY_BUFFER, size * 3.0f * sizeof(float), normals, GL_DYNAMIC_DRAW);
+
+  
+    glDrawArrays(GL_POINTS, 0, size);
 }
 
 void Renderer::end()

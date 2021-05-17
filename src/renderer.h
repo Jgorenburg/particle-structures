@@ -30,6 +30,9 @@ namespace agl {
       virtual bool initialized() const;
       glm::vec3 cameraPosition() const;
 
+      virtual void dynamicInit(int size, const std::string& vertex, const std::string& fragment);
+      virtual void particles(const float* positions, const float* normals, int size, glm::mat3 rot = mat3(1));
+
    protected:
 
       virtual void blendMode(BlendMode mode);

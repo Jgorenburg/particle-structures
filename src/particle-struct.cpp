@@ -12,12 +12,39 @@ using namespace glm;
 
 
 
+
 void ParticleStruct::createParticles(int size)
 {
    mTexture = theRenderer.loadTexture("../textures/particle.png");
    numParticles = size;
 
   
+}
+
+ParticleStruct::~ParticleStruct()
+{
+	for (int i = 0; i < mParticles.size(); i++) {
+		delete[] mParticles[i].bezier;
+	}
+	delete[] pos;
+	delete[] norm;
+}
+
+void ParticleStruct::init(int size)
+{
+	if (!theRenderer.initialized())
+	{
+		theRenderer.dynamicInit(size, "../shaders/billboard.vs", "../shaders/billboard.fs");
+	}
+	createParticles(size);
+}
+
+void ParticleStruct::draw()
+{
+	
+	theRenderer.begin(mTexture, mBlendMode);
+
+	theRenderer.particles(pos, norm, numParticles);
 }
 
 
@@ -309,6 +336,46 @@ void ParticleStruct::updateSize() {
 }
 
 
+// make sure to only call after updateArrays
+float ParticleStruct::getSize() {
+	return numParticles;
+}
+
+void ParticleStruct::updateArrays() {
+	delete[] pos;
+	delete[] norm;
+
+	numParticles = mParticles.size();
+
+	pos = new float[3.0f * numParticles];
+	norm = new float[3.0f * numParticles];
+
+	for (int i = 0; i < numParticles; i++) {
+		int j = 3 * i;
+		pos[j] = mParticles[i].pos.x;
+		pos[j + 1] = mParticles[i].pos.y;
+		pos[j + 2] = mParticles[i].pos.z;
+
+		/*
+		norm[j] = mParticles[i].pos.x;
+		norm[j + 1] = mParticles[i].pos.y;
+		norm[j + 2] = mParticles[i].pos.z;
+		*/
+		norm[j] = 0.0f;
+		norm[j + 1] = 0.0f;
+		norm[j + 2] = 0.0f;
+	}
+}
+
+float* ParticleStruct::positions() {
+	return pos;
+}
+
+float* ParticleStruct::normals() {
+	return norm;
+}
+
+
 
 // code copied from StackExchange
 // https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats
@@ -318,4 +385,5 @@ float ParticleStruct::RandomFloat(float a, float b) {
 	float r = random * diff;
 	return a + r;
 }
+
 
