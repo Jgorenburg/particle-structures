@@ -32,7 +32,7 @@ namespace agl {
    private:
        bool sizestart = true;
        float numParticles;
-       vec3 colors = vec3(1);
+       vec4 colors = vec4(128, 128, 0, 1);
        float fulltime = 0;
        float* pos;
        float* norm;
@@ -45,6 +45,7 @@ namespace agl {
        void build(float dt);
        float RandomFloat(float a, float b);
        vec3 BezierInterp(const vec3 * points, float time);
+       void setColor(vec4 newColor);
    };
 }
 #endif

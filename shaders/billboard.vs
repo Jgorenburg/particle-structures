@@ -15,8 +15,8 @@ out vec2 uv;
 
 void main()
 {
-  cout << "got here\n";
   color = uColor;
   uv = vPos.xy;
   gl_Position = uVP * vec4(uRot * ((vPos - vec3(0.5f, 0.5f, 0)) * uSize) + uOffset, 1); 
+// gl_Position = vPos;
 }

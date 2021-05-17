@@ -31,7 +31,7 @@ namespace agl {
       glm::vec3 cameraPosition() const;
 
       virtual void dynamicInit(int size, const std::string& vertex, const std::string& fragment);
-      virtual void particles(const float* positions, const float* normals, int size, glm::mat3 rot = mat3(1));
+      virtual void particles(const float* positions, const float* normals, const glm::vec4& color, int size, glm::mat3 rot = mat3(1));
 
    protected:
 

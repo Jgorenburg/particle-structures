@@ -22,20 +22,7 @@ GLuint theVboPosId;
 GLuint theVboNormalId;
 GLuint theElementbuffer;
 
-static void updateParticles()
-{
-   // assert(modelId >= 0 && modelId < theModelNames.size());
-   // theModel.loadPLY(theModelNames[theCurrentModel]);
 
-    theSystem.updateArrays();
-
-    glBindBuffer(GL_ARRAY_BUFFER, theVboPosId);
-    glBufferData(GL_ARRAY_BUFFER, theSystem.getSize() * 3.0f * sizeof(float), theSystem.positions(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, theVboNormalId);
-    glBufferData(GL_ARRAY_BUFFER, theSystem.getSize() * 3.0f * sizeof(float), theSystem.normals(), GL_DYNAMIC_DRAW);
-  
-}
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {

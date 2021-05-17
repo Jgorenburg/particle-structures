@@ -44,7 +44,7 @@ void ParticleStruct::draw()
 	
 	theRenderer.begin(mTexture, mBlendMode);
 
-	theRenderer.particles(pos, norm, numParticles);
+	theRenderer.particles(pos, norm, colors, numParticles);
 }
 
 
@@ -108,10 +108,12 @@ void ParticleStruct::buildFromSphere(vec3 place, vec3 origin, float radius, floa
 	for (float i = minZ; i <= maxZ; i = i + scale) {
 		for (float j = minY; j <= maxY; j = j + scale) {
 			for (float k = minX; k <= maxX; k = k + scale) {
+				vec3 jitter = random_unit_cube() * scale;
 				vec3 point(k, j, i);
 				if (length(point - origin) <= radius) {
 					Particle p;
 
+					setColor(vec4(0, 128, 0, 1));
 					p.color = vec4(0, 128, 0, 1);
 					p.vel = vec3(0);
 					p.initSize = scale * 2;
@@ -120,7 +122,7 @@ void ParticleStruct::buildFromSphere(vec3 place, vec3 origin, float radius, floa
 					p.bezier = new vec3[4];
 					vec3 start = place + random_unit_sphere() * distribution;
 					p.bezier[0] = start;
-					p.bezier[3] = point;
+					p.bezier[3] = point + jitter;
 					p.pos = start;
 					p.done = false;
 					p.speed = RandomFloat(speed / 2, 1.5 * speed);
@@ -177,10 +179,13 @@ void ParticleStruct::buildCircle(vec3 origin, float radius, float scale)
 	for (float i = minZ; i <= maxZ; i = i + scale) {
 		for (float j = minY; j <= maxY; j = j + scale) {
 			for (float k = minX; k <= maxX; k = k + scale) {
+				vec3 jitter = random_unit_cube() * scale;
 				vec3 point(k, j, i);
 				if (length(point - origin) <= radius) {
+					setColor(vec4(0, 128, 0, 1));
+
 					Particle p;
-					p.pos = point;
+					p.pos = point + jitter;
 					p.color = vec4(0, 128, 0, 1);
 					p.vel = vec3(0);
 					p.size = scale * 2;
@@ -277,6 +282,8 @@ void ParticleStruct::decay(float dt)
 
 			if (p.time > 1) {
 				p.color = vec4(0, 0, 0, 1);
+				//setColor(vec4(0, 0, 0, 1));
+				p.pos.z = -p.pos.z;
 				p.done = true;
 			}
 			else {
@@ -342,6 +349,7 @@ float ParticleStruct::getSize() {
 }
 
 void ParticleStruct::updateArrays() {
+	
 	delete[] pos;
 	delete[] norm;
 
@@ -361,6 +369,10 @@ void ParticleStruct::updateArrays() {
 		norm[j + 1] = mParticles[i].pos.y;
 		norm[j + 2] = mParticles[i].pos.z;
 		*/
+		/*pos[j] = random_unit_cube().x;
+		pos[j + 1] = random_unit_cube().y;
+		pos[j + 2] = random_unit_cube().z;*/
+
 		norm[j] = 0.0f;
 		norm[j + 1] = 0.0f;
 		norm[j + 2] = 0.0f;
@@ -375,6 +387,9 @@ float* ParticleStruct::normals() {
 	return norm;
 }
 
+void ParticleStruct::setColor(vec4 newColor) {
+	colors = newColor;
+}
 
 
 // code copied from StackExchange
