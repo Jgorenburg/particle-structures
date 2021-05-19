@@ -42,6 +42,7 @@ namespace agl {
    protected:
       GLuint mShaderId;
       GLuint mVboPosId;
+      GLuint mVboNormId;
       GLuint mVaoId;
       glm::mat4 mProjectionMatrix;
       glm::mat4 mViewMatrix;

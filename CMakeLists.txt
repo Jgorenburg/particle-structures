@@ -93,11 +93,15 @@ set(PSYS_SOURCES
 
 set(SHADERS
     shaders/billboard.fs
-    shaders/billboard.vs)
+    shaders/billboard.vs
+    shaders/phong.fs
+    shaders/phong.vs)
 
 set(FINAL_PROJ
     src/particle-struct.cpp
-    src/particle-struct.h)
+    src/particle-struct.h
+    src/shapes.h
+    src/shapes.cpp)
 
 add_executable(billboard src/main-billboard.cpp ${RENDER_SOURCES} ${SHADERS})
 target_link_libraries(billboard ${CORE})

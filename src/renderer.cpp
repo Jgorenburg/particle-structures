@@ -75,6 +75,7 @@ void Renderer::dynamicInit(int size, const std::string& vertex, const std::strin
     //float* positions = new float[3 * size];
 
     glGenBuffers(1, &mVboPosId);
+    glGenBuffers(1, &mVboNormId);
   
     glGenVertexArrays(1, &mVaoId);
     glBindVertexArray(mVaoId);
@@ -82,6 +83,12 @@ void Renderer::dynamicInit(int size, const std::string& vertex, const std::strin
     glEnableVertexAttribArray(0); // 0 -> Sending VertexPositions to array #0 in the active shader
     glBindBuffer(GL_ARRAY_BUFFER, mVboPosId); // always bind before setting data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+    glEnableVertexAttribArray(1); // 1 -> Sending Normals to array #1 in the active shader
+    glBindBuffer(GL_ARRAY_BUFFER, mVboNormId); // always bind before setting data
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+
 
     mShaderId = loadShader(vertex, fragment);
   
@@ -138,9 +145,24 @@ void Renderer::begin(GLuint texIf, BlendMode mode)
    glUseProgram(mShaderId);
    blendMode(mode);
 
+
+   // camera stuff
    mat4 mvp = mProjectionMatrix * mViewMatrix;
+   mat4 mv = mViewMatrix;
+   mat3 nmv = mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2]));
+   glUniformMatrix4fv(glGetUniformLocation(mShaderId, "uMV"), 1, GL_FALSE, &mv[0][0]);
+   glUniformMatrix3fv(glGetUniformLocation(mShaderId, "uNMV"), 1, GL_FALSE, &nmv[0][0]);
    glUniformMatrix4fv(glGetUniformLocation(mShaderId, "uVP"), 1, GL_FALSE, &mvp[0][0]);
    glUniform3f(glGetUniformLocation(mShaderId, "uCameraPos"), mLookfrom[0], mLookfrom[1], mLookfrom[2]);
+
+   // fragment controls
+   glUniform3f(glGetUniformLocation(mShaderId, "Ks"), 1.0, 1.0, 1.0);
+   glUniform3f(glGetUniformLocation(mShaderId, "Kd"), 0.4, 0.6, 1.0);
+   glUniform3f(glGetUniformLocation(mShaderId, "Ka"), 0.1, 0.1, 0.1);
+   glUniform1f(glGetUniformLocation(mShaderId, "Shininess"), 80.0f);
+   glUniform4f(glGetUniformLocation(mShaderId, "LightPosition"), 100.0, 100.0, 100.0, 0.0);
+   glUniform3f(glGetUniformLocation(mShaderId, "LightIntensity"), 1.0, 1.0, 1.0);
+
 
    GLuint locId = glGetUniformLocation(mShaderId, "image");
    glUniform1i(locId, 0);
@@ -152,9 +174,7 @@ void Renderer::begin(GLuint texIf, BlendMode mode)
 void Renderer::quad(const glm::vec3& pos, const glm::vec4& color, float size, glm::mat3 rot)
 {
    assert(mInitialized);
-   glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
-   glUniform1f(glGetUniformLocation(mShaderId, "uSize"), size);
    glUniformMatrix3fv(glGetUniformLocation(mShaderId, "uRot"), 1, GL_FALSE, &rot[0][0]);
 
   
@@ -166,15 +186,16 @@ void Renderer::particles(const float* positions, const float* normals, const glm
     assert(mInitialized);
 
 
-    glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), 0, 0, 0);
     glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
-    glUniform1f(glGetUniformLocation(mShaderId, "uSize"), 1);
     glUniformMatrix3fv(glGetUniformLocation(mShaderId, "uRot"), 1, GL_FALSE, &rot[0][0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVboPosId);
     glBufferData(GL_ARRAY_BUFFER, size * 3.0f * sizeof(float), positions, GL_DYNAMIC_DRAW);
 
+    glBindBuffer(GL_ARRAY_BUFFER, mVboNormId);
+    glBufferData(GL_ARRAY_BUFFER, size * 3.0f * sizeof(float), normals, GL_DYNAMIC_DRAW);
     
+  
     glDrawArrays(GL_POINTS, 0, size);
 }
 

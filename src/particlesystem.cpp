@@ -14,15 +14,15 @@ Renderer& ParticleSystem::GetRenderer()
 
 ParticleSystem::ParticleSystem()
 {
-   mBlendMode = ADD;
+  // mBlendMode = ADD;
    mTexture = -1;
 }
 
 ParticleSystem::~ParticleSystem()
 {
-    for (int i = 0; i < mParticles.size(); i++) {
+    /*for (int i = 0; i < mParticles.size(); i++) {
         delete[] mParticles[i].bezier;
-    }
+    }*/
 }
 
 void ParticleSystem::init(int size)

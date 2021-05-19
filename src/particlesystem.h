@@ -16,7 +16,7 @@ namespace agl {
       float size;
       float mass;
 
-      vec3 * bezier;
+      vec3* bezier;
       float time;
       float speed;
       float initSize;

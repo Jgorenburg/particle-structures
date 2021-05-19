@@ -2,26 +2,29 @@
 #define ParticleStruct_H_
 
 #include "particlesystem.h"
+#include "shapes.h"
 
 namespace agl {
+
+   struct Object {
+
+   };
 
    class ParticleStruct : public ParticleSystem {
    public:
       virtual void createParticles(int size) override;
       virtual ~ParticleStruct();
       virtual void update(float dt) override;
-      virtual void updateSize();
       //virtual void addParticles(vec3 cursorpos, float dt);
       virtual void buildCircle(vec3 origin, float radius, float scale = 0.1f);
-      virtual void buildTriangle(vec3 first, vec3 second, vec3 third, float scale = 0.1f);
-
+    
       // triggers the start of decaying
       // place is the location the particles decay towards
       // distribution decides how closely they head towards that point
       // speed is how fast they approach
-      virtual void decayTo(vec3 place, float distribution = 1.0f, float speed = 0.3f);
+      virtual void decayTo(vec3 place, float distribution = 1.0f, float speed = 0.3f, vec4 color = vec4(1));
 
-      virtual void buildFromSphere(vec3 place, vec3 origin, float radius, float distribution = 1.0f, float speed = 0.3f, float scale = 0.1f);
+      virtual void buildFromSphere(shape object, vec3 place, float distribution = 1.0f, float speed = 0.3f, float scale = 0.1f, vec4 color = vec4(1));
       virtual float getSize();
       virtual void updateArrays();
       virtual float* positions();
@@ -39,6 +42,7 @@ namespace agl {
 
        bool decaying = false;
        bool building = false;
+       bool updatedSize = true;
 
        float relPosFromLine(vec3 first, vec3 second, vec3 pos);
        void decay(float dt);
