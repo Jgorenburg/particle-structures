@@ -17,6 +17,7 @@ using namespace glm;
 void ParticleStruct::createParticles(int size)
 {
    mTexture = theRenderer.loadTexture("../textures/particle.png");
+   maxParticles = size;
    numParticles = size;
 }
 
@@ -96,8 +97,8 @@ void ParticleStruct::buildFromSphere(vec3 place, vec3 origin, float radius, floa
 	float widthY = maxY - minY;
 	float widthZ = maxZ - minZ;
 
-	if (widthX * widthY * widthZ / pow(scale, 3.0f) > numParticles) {
-		float downscale = cbrt(numParticles / (widthX * widthY * widthZ / pow(scale, 3.0f)));
+	if (widthX * widthY * widthZ / pow(scale, 3.0f) > maxParticles) {
+		float downscale = cbrt(maxParticles / (widthX * widthY * widthZ / pow(scale, 3.0f)));
 		scale = scale / downscale;
 	}
 
@@ -129,27 +130,91 @@ void ParticleStruct::buildFromSphere(vec3 place, vec3 origin, float radius, floa
 					p.time = 0;
 					p.norm = normalize(p.bezier[3] - origin);
 
-					float minX = std::min(p.pos.x, place.x);
-					float maxX = std::max(p.pos.x, place.x);
-					float minY = std::min(p.pos.y, place.y);
-					float maxY = std::max(p.pos.y, place.y);
-					float minZ = std::min(p.pos.z, place.z);
-					float maxZ = std::max(p.pos.z, place.z);
+					float minX = std::min(p.pos.x, p.bezier[3].x);
+					float maxX = std::max(p.pos.x, p.bezier[3].x);
+					float minY = std::min(p.pos.y, p.bezier[3].y);
+					float maxY = std::max(p.pos.y, p.bezier[3].y);
+					float minZ = std::min(p.pos.z, p.bezier[3].z);
+					float maxZ = std::max(p.pos.z, p.bezier[3].z);
 
 					p.bezier[1] = vec3(RandomFloat(minX, maxX), RandomFloat(minY, maxY), RandomFloat(minZ, maxZ));
 					p.bezier[2] = vec3(RandomFloat(minX, maxX), RandomFloat(minY, maxY), RandomFloat(minZ, maxZ));
 
 
 
-					if (mParticles.size() < numParticles) {
+					if (mParticles.size() < maxParticles) {
 						mParticles.push_back(p);
 					}
 				}
 			}
 		}
 	}
+	cout << "max size: " << maxParticles << endl;
+	cout << "real size: " << mParticles.size() << endl;
 }
 
+void ParticleStruct::moveToSphere(vec3 origin, float radius, float distribution, float speed, float scale, vec4 color) {
+	building = true;
+	decaying = false;
+
+	if (radius <= 0) { return; }
+
+	float minX = origin.x - radius;
+	float maxX = origin.x + radius;
+	float minY = origin.y - radius;
+	float maxY = origin.y + radius;
+	float minZ = origin.z - radius;
+	float maxZ = origin.z + radius;
+
+	float widthX = (maxX - minX) / 2;
+	float widthY = (maxY - minY) / 2;
+	float widthZ = (maxZ - minZ) / 2;
+
+
+	int count = 0;
+
+	while (count < mParticles.size()) {
+		vec3 point = random_unit_cube();
+		vec3 offset(minX + widthX, minY + widthY, minZ + widthZ);
+		point.x = point.x * widthX + offset.x;
+		point.y = point.y * widthY + offset.y;
+		point.z = point.z * widthZ + offset.z;
+
+		if (length(point - origin) <= radius) {
+			Particle p = mParticles[count];
+
+			p.color = vec4(0, 128, 0, 1);
+			p.vel = vec3(0);
+			p.initSize = scale * 2;
+			p.size = 0.0f;
+
+			p.bezier = new vec3[4];
+			vec3 start = p.pos;
+			if (p.pos.z > 0) { p.pos.z = -p.pos.z; }
+			p.bezier[0] = start;
+			p.bezier[3] = point;
+			p.pos = start;
+			p.done = false;
+			p.speed = RandomFloat(speed / 2, 1.5 * speed);
+			p.time = 0;
+			p.norm = normalize(p.bezier[3] - origin);
+
+			float minX = std::min(p.pos.x, p.bezier[3].x);
+			float maxX = std::max(p.pos.x, p.bezier[3].x);
+			float minY = std::min(p.pos.y, p.bezier[3].y);
+			float maxY = std::max(p.pos.y, p.bezier[3].y);
+			float minZ = std::min(p.pos.z, p.bezier[3].z);
+			float maxZ = std::max(p.pos.z, p.bezier[3].z);
+
+
+			p.bezier[1] = vec3(RandomFloat(minX, maxX), RandomFloat(minY, maxY), RandomFloat(minZ, maxZ));
+			p.bezier[2] = vec3(RandomFloat(minX, maxX), RandomFloat(minY, maxY), RandomFloat(minZ, maxZ));
+
+			mParticles[count] = p;
+			count++;
+		}
+	}
+}
 
 
 
@@ -170,8 +235,8 @@ void ParticleStruct::buildCircle(vec3 origin, float radius, float scale)
 	float widthZ = maxZ - minZ;
 
 	// sets a minimum scale based on max num of particles
-	if (widthX * widthY * widthZ / pow(scale, 3.0f) > numParticles){
-		float downscale = cbrt(numParticles / (widthX * widthY * widthZ / pow(scale, 3.0f)));
+	if (widthX * widthY * widthZ / pow(scale, 3.0f) > maxParticles){
+		float downscale = cbrt(maxParticles / (widthX * widthY * widthZ / pow(scale, 3.0f)));
 		scale = scale / downscale;
 	}
 
@@ -194,15 +259,14 @@ void ParticleStruct::buildCircle(vec3 origin, float radius, float scale)
 					p.bezier = new vec3[0];
 					p.norm = normalize(p.pos - origin);
 
-					if (mParticles.size() < numParticles) {
+					if (mParticles.size() < maxParticles) {
 						mParticles.push_back(p);
 					}
 				}
 			}
 		}
-		cout << "salmon:" << i << endl;
 	}
-	cout << "out\n";
+	cout << mParticles.size() << "out\n";
 }
 
 
@@ -248,16 +312,12 @@ void ParticleStruct::addParticles(vec3 cursorPos, float dt) {
 void ParticleStruct::update(float dt)
 {
 	if (decaying) {
-		cout << "decay!\n";
 		decay(dt);
 	}
 	else if (building) {
-		cout << "build!\n";
 		build(dt);
 	}
-	else {
-		cout << "nothing\n";
-	}
+	
 }
 
 void ParticleStruct::decay(float dt)
@@ -274,7 +334,9 @@ void ParticleStruct::decay(float dt)
 			if (p.time > 1) {
 				p.color = vec4(0, 0, 0, 1);
 				//setColor(vec4(0, 0, 0, 1));
-				p.pos.z = -p.pos.z;
+				if (p.pos.z < 0) { p.pos.z = -p.pos.z + 4; }
+				else if (p.pos.z == 0) { p.pos.z = 5; }
+				else { p.pos.z = 5; }
 				p.done = true;
 			}
 			else {
@@ -339,11 +401,13 @@ void ParticleStruct::updateArrays() {
 		delete[] pos;
 		delete[] norm;
 
+		numParticles = mParticles.size();
+
 		pos = new float[3.0f * numParticles];
 		norm = new float[3.0f * numParticles];
 
 		updatedSize = false;
-		numParticles = mParticles.size();
+		
 	}
 
 	for (int i = 0; i < numParticles; i++) {

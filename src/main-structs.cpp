@@ -31,7 +31,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
    if (key == GLFW_KEY_SPACE)
    {
-       theSystem.decayTo(vec3(1.5, 1.5, -6), 3.0f, 0.6f, vec4(138, 138, 0, 1));
+       vec3 newPlace = random_unit_cube() * 1.0f;
+       newPlace.z = -abs(newPlace.z) - 4;
+       theSystem.decayTo(newPlace, 5.0f, 0.6f, vec4(138, 138, 0, 1));
    }
 
    if (key == GLFW_KEY_ESCAPE)
@@ -41,7 +43,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
    if (key == GLFW_KEY_ENTER)
    {
-       theSystem.buildFromSphere(vec3(1.5, 1.5, -6), vec3(-1, -1, -6), 1, 6.0f, 0.6f, 0.005f, vec4(0, 0, 138, 1));
+       vec3 newPlace = random_unit_cube() * 1.2f;
+       newPlace.z = -abs(newPlace.z);
+       vec3 oldPlace = random_unit_cube() * 3.0f;
+       oldPlace.z = -abs(newPlace.z);
+       float radius = random_unit_cube().x * 1.4f;
+       theSystem.buildFromSphere(oldPlace, newPlace, radius, 3.0f, 0.6f, 0.005f, vec4(0, 0, 138, 1));
+   }
+
+   if (key == GLFW_KEY_RIGHT_SHIFT)
+   {
+       vec3 newPlace = random_unit_cube() * 1.0f;
+       newPlace.z = -abs(newPlace.z);
+       float radius = random_unit_cube().x * 1.4f;
+     //  theSystem.moveToSphere(newPlace, radius, 3.0f, 0.6f, 0.005f, vec4(0, 0, 138, 1));
    }
 }
 
@@ -126,7 +141,7 @@ int main(int argc, char** argv)
    glBindBuffer(GL_ARRAY_BUFFER, theVboNormalId); // always bind before setting data
    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
 
-   theSystem.init(750000); // TODO: Set number of particles here
+   theSystem.init(550000); // TODO: Set number of particles here
    theSystem.buildCircle(vec3(-1, -1, -6), 1, 0.00005);
    float fov = radians(30.0f);
    ParticleSystem::GetRenderer().perspective(fov, 1.0f, 0.1f, 10.0f);

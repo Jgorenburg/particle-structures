@@ -24,6 +24,8 @@ namespace agl {
       virtual void decayTo(vec3 place, float distribution = 1.0f, float speed = 0.3f, vec4 color = vec4(1));
 
       virtual void buildFromSphere(vec3 place, vec3 origin, float radius, float distribution = 1.0f, float speed = 0.3f, float scale = 0.1f, vec4 color = vec4(1));
+      virtual void moveToSphere(vec3 origin, float radius, float distribution = 1.0f, float speed = 0.3f, float scale = 0.1f, vec4 color = vec4(1));
+
       virtual float getSize();
       virtual void updateArrays();
       virtual float* positions();
@@ -34,6 +36,7 @@ namespace agl {
    private:
        bool sizestart = true;
        float numParticles;
+       int maxParticles;
        vec4 colors = vec4(128, 128, 0, 1);
        float fulltime = 0;
        float* pos;
@@ -41,7 +44,7 @@ namespace agl {
 
        bool decaying = false;
        bool building = false;
-       bool updatedSize = true;
+       bool updatedSize = false;
 
        float relPosFromLine(vec3 first, vec3 second, vec3 pos);
        void decay(float dt);
