@@ -79,19 +79,22 @@ void ParticleStruct::decayTo(vec3 place, float distribution, float speed, vec4 c
 	}
 }
 
-void ParticleStruct::buildFromSphere(shape object, vec3 place, float distribution, float speed, float scale, vec4 color) {
+void ParticleStruct::buildFromSphere(vec3 place, vec3 origin, float radius, float distribution, float speed, float scale, vec4 color) {
 	building = true;
 	decaying = false;
 
-	setColor(color);
+	if (radius <= 0) { return; }
 
-	vec3 mins = object.getMins();
-	vec3 maxs = object.getMaxs();
-	
+	float minX = origin.x - radius;
+	float maxX = origin.x + radius;
+	float minY = origin.y - radius;
+	float maxY = origin.y + radius;
+	float minZ = origin.z - radius;
+	float maxZ = origin.z + radius;
 
-	float widthX = maxs.x - mins.x;
-	float widthY = maxs.y - mins.y;
-	float widthZ = maxs.z - mins.z;
+	float widthX = maxX - minX;
+	float widthY = maxY - minY;
+	float widthZ = maxZ - minZ;
 
 	if (widthX * widthY * widthZ / pow(scale, 3.0f) > numParticles) {
 		float downscale = cbrt(numParticles / (widthX * widthY * widthZ / pow(scale, 3.0f)));
@@ -101,15 +104,14 @@ void ParticleStruct::buildFromSphere(shape object, vec3 place, float distributio
 	for (int i = 0; i < mParticles.size(); i++) {
 		delete[] mParticles[i].bezier;
 	}
-
 	mParticles.clear();
-	
-	for (float i = mins.z; i <= maxs.z; i = i + scale) {
-		for (float j = mins.y; j <= maxs.y; j = j + scale) {
-			for (float k = mins.x; k <= maxs.x; k = k + scale) {
+
+	for (float i = minZ; i <= maxZ; i = i + scale) {
+		for (float j = minY; j <= maxY; j = j + scale) {
+			for (float k = minX; k <= maxX; k = k + scale) {
 				vec3 jitter = random_unit_cube() * scale;
 				vec3 point(k, j, i);
-				if (object.inShape(point)) {
+				if (length(point - origin) <= radius) {
 					Particle p;
 
 					p.color = vec4(0, 128, 0, 1);
@@ -125,7 +127,7 @@ void ParticleStruct::buildFromSphere(shape object, vec3 place, float distributio
 					p.done = false;
 					p.speed = RandomFloat(speed / 2, 1.5 * speed);
 					p.time = 0;
-					p.norm = object.getNormal(point + jitter);
+					p.norm = normalize(p.bezier[3] - origin);
 
 					float minX = std::min(p.pos.x, place.x);
 					float maxX = std::max(p.pos.x, place.x);
@@ -145,8 +147,9 @@ void ParticleStruct::buildFromSphere(shape object, vec3 place, float distributio
 				}
 			}
 		}
-	}	
+	}
 }
+
 
 
 

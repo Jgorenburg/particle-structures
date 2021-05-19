@@ -9,7 +9,6 @@
 #include <vector>
 #include "particle-struct.h"
 #include "renderer.h"
-#include "shapes.h"
 
 
 using namespace std;
@@ -42,8 +41,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
    if (key == GLFW_KEY_ENTER)
    {
-       sphere newSphere(vec3(-1, -1, -6), 1);
-       theSystem.buildFromSphere(newSphere, vec3(1.5, 1.5, -6), 6.0f, 0.6f, 0.005f, vec4(0, 0, 138, 1));
+       theSystem.buildFromSphere(vec3(1.5, 1.5, -6), vec3(-1, -1, -6), 1, 6.0f, 0.6f, 0.005f, vec4(0, 0, 138, 1));
    }
 }
 

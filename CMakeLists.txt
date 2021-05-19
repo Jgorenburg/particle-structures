@@ -100,8 +100,7 @@ set(SHADERS
 set(FINAL_PROJ
     src/particle-struct.cpp
     src/particle-struct.h
-    src/shapes.h
-    src/shapes.cpp)
+ )
 
 add_executable(billboard src/main-billboard.cpp ${RENDER_SOURCES} ${SHADERS})
 target_link_libraries(billboard ${CORE})
