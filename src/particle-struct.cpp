@@ -166,19 +166,11 @@ void ParticleStruct::moveToSphere(vec3 origin, float radius, float distribution,
 	float minZ = origin.z - radius;
 	float maxZ = origin.z + radius;
 
-	float widthX = (maxX - minX) / 2;
-	float widthY = (maxY - minY) / 2;
-	float widthZ = (maxZ - minZ) / 2;
-
 
 	int count = 0;
 
 	while (count < mParticles.size()) {
-		vec3 point = random_unit_cube();
-		vec3 offset(minX + widthX, minY + widthY, minZ + widthZ);
-		point.x = point.x * widthX + offset.x;
-		point.y = point.y * widthY + offset.y;
-		point.z = point.z * widthZ + offset.z;
+		vec3 point = origin + 2 * radius * random_unit_sphere();
 
 		if (length(point - origin) <= radius) {
 			Particle p = mParticles[count];
