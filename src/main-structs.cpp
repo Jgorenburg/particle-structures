@@ -141,8 +141,8 @@ int main(int argc, char** argv)
    glBindBuffer(GL_ARRAY_BUFFER, theVboNormalId); // always bind before setting data
    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
 
-   theSystem.init(200000); // TODO: Set number of particles here
-   theSystem.buildCircle(vec3(-1, -1, -6), 1, 0.00005);
+   theSystem.init(750000); // TODO: Set number of particles here
+   theSystem.buildSphere(vec3(-1, -1, -6), 1, 0.00005);
    float fov = radians(30.0f);
    ParticleSystem::GetRenderer().perspective(fov, 1.0f, 0.1f, 10.0f);
    ParticleSystem::GetRenderer().lookAt(vec3(0,0,4), vec3(0,0,0));

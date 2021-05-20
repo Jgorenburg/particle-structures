@@ -34,7 +34,7 @@ void ParticleStruct::init(int size)
 {
 	if (!theRenderer.initialized())
 	{
-		theRenderer.dynamicInit(size, "../shaders/phong.vs", "../shaders/phong.fs");
+		theRenderer.dynamicInit(size, "../shaders/billboard.vs", "../shaders/billboard.fs");
 	}
 	createParticles(size);
 }
@@ -211,7 +211,7 @@ void ParticleStruct::moveToSphere(vec3 origin, float radius, float distribution,
 
 
 // builds a circle out of particles
-void ParticleStruct::buildCircle(vec3 origin, float radius, float scale)
+void ParticleStruct::buildSphere(vec3 origin, float radius, float scale)
 {
 	if (radius <= 0) { return; }
 
@@ -433,7 +433,7 @@ void ParticleStruct::setColor(vec4 newColor) {
 }
 
 
-// code copied from StackExchange
+// code copied from StackOverflow
 // https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats
 float ParticleStruct::RandomFloat(float a, float b) {
 	float random = ((float)rand()) / (float)RAND_MAX;

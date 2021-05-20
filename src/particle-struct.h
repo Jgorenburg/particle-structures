@@ -15,7 +15,7 @@ namespace agl {
       virtual ~ParticleStruct();
       virtual void update(float dt) override;
       //virtual void addParticles(vec3 cursorpos, float dt);
-      virtual void buildCircle(vec3 origin, float radius, float scale = 0.1f);
+      virtual void buildSphere(vec3 origin, float radius, float scale = 0.1f);
     
       // triggers the start of decaying
       // place is the location the particles decay towards
